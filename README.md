@@ -9,7 +9,7 @@
 
 ## Overview
 
-This is a **web-based framework** designed to simplify the creation of educational games that teach technical concepts using engaging gameplay mechanics, based on **The XSS Game (https://github.com/darkcyberwizard/TheXSSGame)**.
+This is a **web-based framework** designed to simplify the creation of educational games that teach technical concepts using engaging gameplay mechanics, based on **[The XSS Game](https://github.com/darkcyberwizard/TheXSSGame)**.
 
 The framework supports:
 
