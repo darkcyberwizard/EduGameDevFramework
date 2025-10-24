@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edu. Game Dev</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    
+    <!-- External CSS libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"> 
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External JavaScript libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.1/purify.min.js"></script>
+    <script src="scripts/jquery.js"></script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/aes.js"></script>
+    <script src="scripts/js-fluid-meter.js"></script>
+  </head>
+
+  <body>      
+    <div id="container1" class="container">
+      <!-- Main Game UI -->
+      <div id="mainUI">
+        <!-- Audio elements for game sounds -->
+        <audio id="buttonHoverSound" src="music/buttonHover.mp3" allow="autoplay"> </audio>
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3" allow="autoplay"></audio>
+        <audio id="buttonSelectSound" src="music/buttonSelect.mp3" allow="autoplay"></audio>
+        <audio id="buttonErrorSound" src="music/buttonError.mp3" allow="autoplay"></audio>
+        
+        <!-- Main menu buttons -->
+        <button id="startGameButton1" class="button" onmouseenter="playButtonHoverMusic()" onclick="showSelectPlayerNameUI()">Start Game</button>
+        <a href="#" target="_blank"><button id="XSSResourcesButton1" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+        <button id="LeaderBoardButton1" class="button" onmouseenter="playButtonHoverMusic()" onclick="showLeaderBoard()">View Leaderboard</button>
+
+        <!-- Game branding and control buttons -->
+        <img id="gamenamegif" src="images/game-name.gif" />
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+      </div>
+
+      <!-- Info Popup Window -->
+      <div id="infoPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow1" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header">
+              <p id="gameInfoHeader"> Game Information </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts-info">
+                <li class="lang" key="INFO1TXT1">Add necessary game information here.</li>
+              </ul>
+              <button id="OkButton1" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeDisplayInfo()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GDPR Privacy Policy Popup -->
+      <div id="gdprPopup1" class="overlay" style="display:none;">
+        <div id="gdprwindow1" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header">
+              <p id="privacyPolicyHeader"> Privacy Notice for Game Players</p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Add privacy policy information here.</li>
+                <li class="lang" key="INFO1TXT7">A more detailed Privacy Policy can be found <a href="gdpr.html" target="_blank">here</a>.</li>
+              </ul>
+              <button id="AcceptButton1" class="button" onclick="closeGDPRInfo()">Accept & Consent</button>
+              <a href="https://www.google.com/"><button id="DeclineButton1" class="button">Decline</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Player Name Error Popup -->
+      <div id="emptyPlayerNameErrorPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow2" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header-error">
+              <p id="emptyPlayerInfoHeader"> Empty player name or player avatar! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Enter your player name and select a player avatar to continue. </li>
+              </ul>
+              <button id="OkButton2" class="button" onmouseenter="playButtonHoverMusic()" onclick="closePlayerNameErrorInfo()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Player Role Error Popup -->
+      <div id="emptyPlayerRoleErrorPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow3" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header-error">
+              <p> Empty player role! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Select a Player Role to continue. </li>
+              </ul>
+              <button id="OkButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="closePlayerRoleErrorInfo()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invalid Player Name Error Popup -->
+      <div id="playerNameErrorPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow5" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header-error">
+              <p id="invalidPlayerNameHeader"> Invalid player name! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Please enter a valid player name to continue.</li>
+                <li class="lang" key="INFO1TXT2">The player name should only contain alphanumeric characters and should not contain spaces.</li>
+                <li class="lang" key="INFO1TXT3">The player name should be less than or equal to 15 characters.</li>
+              </ul>
+              <button id="OkButton5" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeInvalidPlayerNameErrorInfo()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer Description Popup -->
+      <div id="AnswerPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow6" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header">
+              <p id="AnswerPopUpHeader"> Answer Description </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" id="ANSRTXT1" style='color:rgb(26, 247, 19);font-weight: bold;'></li>
+                <li class="lang" id="ANSRTXT2" style='font-weight: bold;'></li>
+                <li class="lang" id="ANSRTXT3" style='color:red;font-weight: bold;'></li>
+                <li class="lang" id="ANSRTXT4" style='font-weight: bold;'></li>
+              </ul>
+              <button id="OkButton6" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeQuestionAnswerPopUp()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Answer Error Popup -->
+      <div id="emptyAnswerErrorPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow7" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header-error">
+              <p id="emptyAnswerHeader"> Empty Answer! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Please select at least one answer to continue.</li>
+              </ul>
+              <button id="OkButton7" class="button" onmouseenter="playButtonHoverMusic()" onclick="emptyAnswerErrorPopUpInfo()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactivity Info Popup -->
+      <div id="interactivityInfoPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow9" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header">
+              <p id="interactivityPopUpHeader"> You can interact with the game! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <br>
+                <li class="lang" key="INFO1TXT1">Add Simulator Zone information here.</li>
+              </ul>
+              <button id="OkButton9" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeinteractivityInfoPopUp()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulator Zone Popup -->
+      <div id="interactivityZonePopUp1" class="overlay" style="display:none;">
+        <div id="mywindow10" class="window infowindow-simulator-zone">
+          <div class="window-content-simulator-zone info-window-content-simulator-zone">
+            <div class="window-header-simulator-zone">
+              <p> Simulator Zone </p>
+            </div>
+            <div class="window-body-simulator-zone">
+              <p id="simulatorInteractiveText1" class="simulatorInteractiveText"></p>
+              <p id="simulatorInteractiveText2" class="simulatorInteractiveText"></p>
+
+              <img id="questionImageContainerSimulatorZone1" class="questionImage"/> 
+              <img id="questionImageContainerSimulatorZone2" class="questionImage"/>
+
+              <img id="InteractivityBackButton1" class="interactivity-back-button" src="images/back.png" onmouseenter="playButtonHoverMusic()" onclick="startLevelInteractivity(100)">
+      
+              <div id="circleInteractiveButton1" class="circleInteractiveButton" onmouseenter="playButtonHoverMusic()" onclick="startLevelInteractivity(1)">
+                <p id="circleInteractiveText1" class="circleInteractiveText"></p>
+              </div>
+              
+              <div id="circleInteractiveButton2" class="circleInteractiveButton" onmouseenter="playButtonHoverMusic()" onclick="startLevelInteractivity(2)">
+                <p id="circleInteractiveText2" class="circleInteractiveText"></p>
+              </div>
+
+              <!-- XSS Attack Simulation Input -->
+              <input type="text" id="XSSCheckBoxAttackerReflected" name="XSSCheck" value="">
+              <button id="CheckButtonXSSAttackerReflected" class="button" onmouseenter="playButtonHoverMusic()" onclick="checkXSSAttack()">Check</button>  
+              <img id="DOMSimImage" src="">
+              <p id="sanitizedText">Test</p>
+
+              <img id="InteractivityArrowRight" class="interactivityArrow" src="images/right-arrow.png">
+              <img id="InteractivityArrowLeft" class="interactivityArrow" src="images/left-arrow.png">
+                      
+              <button id="ExitButton4" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeSimulatorZone()">Return to Game</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Server Connectivity Popup -->
+      <div id="noServerConnectivityInfoPopUp1" class="overlay" style="display:none;">
+        <div id="mywindow11" class="window infowindow">
+          <div class="window-content info-window-content">
+            <div class="window-header">
+              <p> Can't connect with server! </p>
+            </div>
+            <div class="window-body">
+              <ul class="poptexts">
+                <li class="lang" key="INFO1TXT1">Please try again later.</li>
+                <li class="lang" key="INFO1TXT2"><span style="color: #f5b330">Don't refresh or close the web browser as this will delete and reset your answers.</span></li>
+              </ul>
+              <button id="OkButton10" class="button" onmouseenter="playButtonHoverMusic()" onclick="closeNoServerConnectivityInfoPopUp()">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Name and Avatar Selection UI -->
+      <div id="selectPlayerNameUI" style="display:none;">
+        <label id="playerAvatarHeading" for="playerAvatar">Select Player Avatar</label>
+        <label id="playerNameHeading" for="playerNameBox">Enter Player Name</label>
+        <input type="text" id="playerNameBox" name="playerNameBox" value="">
+  
+        <button id="AcceptButton2" class="button" onmouseenter="playButtonHoverMusic()" onclick="showPreGameQuestionnaireUI()">Confirm & Continue</button>
+        <a href="#" target="_blank"><button id="XSSResourcesButton2" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+  
+        <!-- Avatar selection options -->
+        <img id="avatar0" class="playerAvatars" src="images/avatars/avatar1.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(0)"/>
+        <img id="avatar1" class="playerAvatars" src="images/avatars/avatar2.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(1)"/>
+        <img id="avatar2" class="playerAvatars" src="images/avatars/avatar3.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(2)"/>
+        <img id="avatar3" class="playerAvatars" src="images/avatars/avatar4.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(3)"/>
+        <img id="avatar4" class="playerAvatars" src="images/avatars/avatar5.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(4)"/>
+        <img id="avatar5" class="playerAvatars" src="images/avatars/avatar6.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerAvatar(5)"/>
+
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+      </div>
+
+      <!-- Player Role Selection UI -->
+      <div id="selectPlayerRoleUI" style="display:none;">
+        <button id="ExitButton1" class="button" onmouseenter="playButtonHoverMusic()" onclick="showPostGameQuestionnaireUI()">Exit</button>
+        <a href="#" target="_blank"><button id="XSSResourcesButton4" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+      
+        <label id="playerRoleHeading" for="playerRole">Select Player Role</label>
+
+        <label id="labelPlayerRoleAttacker" for="playerRoleavatar0">Role 1</label>
+        <label id="labelPlayerRoleDefender" for="playerRoleavatar1">Role 2</label>
+        <label id="labelPlayerRoleUser" for="playerRoleavatar2">Role 3</label>
+
+        <img id="playerRoleavatar0" class="playerRoleAvatars" src="images/avatars/role1.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerRole(0)"/>
+        <img id="playerRoleavatar1" class="playerRoleAvatars" src="images/avatars/role2.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerRole(1)"/>
+        <img id="playerRoleavatar2" class="playerRoleAvatars" src="images/avatars/role3.png" onmouseenter="playButtonHoverMusic()" onclick="selectPlayerRole(2)"/>
+      
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+      </div>
+
+      <!-- Pre-game Questionnaire UI -->
+      <div id="preGameQuestionnaireUI" style="display:none;">
+        <section class="wrapper">
+          <div class="content">
+            <div id="preGameQuestionnaire" class="gameQuestionnaire" style="text-align: left;white-space:inherit">
+              <button id="AcceptButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="showSelectPlayerRoleUI()">Confirm & Continue</button>
+              <button id="SkipPreQuestionnaire" class="button" onmouseenter="playButtonHoverMusic()" onclick="showSelectPlayerRoleUI()">Skip</button>
+              <a href="#" target="_blank"><button id="XSSResourcesButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+              <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+              <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+              <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+              <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+              
+              <!-- Pre-game questionnaire content -->
+              <H2 CLASS="western">Pre-Game Questionnaire</H2>
+              <hr class="horizLine">
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%; text-align: center;">Section 1</H2>
+              <hr class="horizLine">
+
+              <!-- MCQ Question Example -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%">MCQ Question:</H2>
+              <input type="radio" id="Answer1" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 1">
+              <label for="Answer1">Answer 1</label><br>
+              <input type="radio" id="Answer2" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 2">
+              <label for="Answer2">Answer 2</label><br>
+              <input type="radio" id="Answer3" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 3">
+              <label for="Answer3">Answer 3</label><br>
+              <input type="radio" id="Answer4" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 4">
+              <label for="Answer4">Answer 4</label><br>
+
+              <hr class="horizLine">
+
+              <!-- Text Box Question -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%">Text Box Question</H2>
+              <textarea id="TextBoxAnswer" name="TextBoxAnswer" rows="10" cols="100" style="margin-left: 1%;font-size: 1vw"></textarea>
+
+              <hr class="horizLine">
+              
+              <!-- Likert Scale Questions -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 0.14in">Likert Scale Question</H2>
+              <form action="">
+                <ul class="likert">
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="1" /><label>Strongly Disagree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="2" /><label>Disagree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="3" /><label>Neutral</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="4" /><label>Agree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="5" /><label>Strongly Agree</label></li>
+                </ul>
+              </form>
+              
+              <hr class="horizLine">
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Post-game Questionnaire UI -->
+      <div id="postGameQuestionnaireUI" style="display:none;">
+        <section class="wrapper">
+          <div class="content">
+            <div id="postGameQuestionnaire" class="gameQuestionnaire" style="text-align: left;white-space:inherit">
+              <button id="AcceptButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="showExitGameUI()">Confirm & Continue</button>
+              <button id="SkipPostQuestionnaire" class="button" onmouseenter="playButtonHoverMusic()" onclick="showExitGameUI()">Skip</button>
+              <a href="#" target="_blank"><button id="XSSResourcesButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+              <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+              <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+              <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+              <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+              
+              <!-- Post-game questionnaire content -->
+              <H2 CLASS="western">Post-Game Questionnaire</H2>
+              <hr class="horizLine">
+              
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%; text-align: center;">Section 1</H2>
+              <hr class="horizLine">
+
+              <!-- MCQ Question Example -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%">MCQ Question:</H2>
+              <input type="radio" id="Answer1" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 1">
+              <label for="Answer1">Answer 1</label><br>
+              <input type="radio" id="Answer2" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 2">
+              <label for="Answer2">Answer 2</label><br>
+              <input type="radio" id="Answer3" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 3">
+              <label for="Answer3">Answer 3</label><br>
+              <input type="radio" id="Answer4" class="radioButtonQuestionnaire" name="MCQ1" value="Answer 4">
+              <label for="Answer4">Answer 4</label><br>
+
+              <hr class="horizLine">
+
+              <!-- Text Box Question -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 1%">Text Box Question</H2>
+              <textarea id="TextBoxAnswer" name="TextBoxAnswer" rows="10" cols="100" style="margin-left: 1%;font-size: 1vw"></textarea>
+
+              <hr class="horizLine">
+              
+              <!-- Likert Scale Questions -->
+              <H2 CLASS="internal" STYLE="margin-bottom: 0.14in">Likert Scale Question</H2>
+              <form action="">
+                <ul class="likert">
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="1" /><label>Strongly Disagree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="2" /><label>Disagree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="3" /><label>Neutral</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="4" /><label>Agree</label></li>
+                  <li><input type="radio" class="radioButtonQuestionnaire1" name="LikertQuestion1" value="5" /><label>Strongly Agree</label></li>
+                </ul>
+              </form>
+              
+              <hr class="horizLine">
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Level Gameplay UI -->
+      <div id="levelUI" style="display:none;">
+        <a href="#" target="_blank"><button id="XSSResourcesButton5" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+        
+        <!-- Simulator Zone access button -->
+        <img id="InteractivityButton1" class="interactivity-button" src="images/target.png" onmouseenter="playButtonHoverMusic()" onclick="startLevelInteractivity()">
+
+        <!-- Level timer display -->
+        <div><span id="levelTimer"></span> </div>
+        <p id="questionHeadingContainer" class="questionHeading"></p>
+
+        <!-- Mini player statboard -->
+        <div id="playerstatboard-mini">
+          <img id="attackerRoleCompletedBadgeMini" src="images/badges/Role1-Completed.png" />
+          <img id="defenderRoleCompletedBadgeMini" src="images/badges/Role2-Completed.png" />
+          <img id="userRoleCompletedBadgeMini" src="images/badges/Role3-Completed.png" />
+          <img id="simZoneCompletedBadgeMini" src="images/badges/Sim-Zone.png" />
+          <img id="playerStatboard-Extended" src="images/bar-graph.png" onmouseenter="playButtonHoverMusic()" onclick="openPlayerStatsZone('Ingame-Level')">
+          <p class="playerNameInGame"></p>
+          <p id="playerBatchText">Badges</p>
+          <div><span id="playerScoreInGame">0</span> </div>
+          <p id="playerScoreContainer" style="position:fixed;top:15%;">Score :</p> 
+          <img class="playerAvatarInGame"/>
+          <p id="questionTextContainer1"></p> 
+          <p id="badgeText"></p>
+          <p id="game_progress_text" class="statboardText">Game progress</p>
+   
+          <!-- Progress visualization -->
+          <div id="fluid-meter"></div>
+          <div id="progress-bar-skills">
+            <div>
+              <p id="Ref-XSS-Skills">Player Skill 1</p>
+              <p id="Ref-XSS-Skills-Value">0</p>
+              <progress id='video-progress-Ref-XSS' class="progress-bar-Ref-skills" min='0' max='100' value='0'></progress>
+            </div>
+
+            <div>
+              <p id="Stored-XSS-Skills">Player Skill 2</p>
+              <p id="Stored-XSS-Skills-Value">0</p>
+              <progress id='video-progress-Stored-XSS' class="progress-bar-Stored-skills" min='0' max='100' value='0'></progress>
+            </div>
+
+            <div>
+              <p id="DOM-based-XSS-Skills">Player Skill 3</p>
+              <p id="DOM-based-XSS-Skills-Value">0</p>
+              <progress id='video-progress-DOM-based-XSS' class="progress-bar-DOM-skills" min='0' max='100' value='0'></progress>
+            </div>
+
+            <div>
+              <p id="Sim-Zone-Skills">Player Skill 4</p>
+              <p id="Sim-Zone-Skills-Value">0</p>
+              <progress id='video-progress-Sim-Zone-Skills-Progress' class="progress-bar-Overall-skills" min='0' max='100' value='0'></progress>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question content area -->
+        <img id="questionImageContainer" class="questionImage"/> 
+        <p id="questionTextContainer" class="questionText"></p>
+
+        <!-- Level indicator graphics -->
+        <img id="level1gif" class="levelgifs" src="images/Level-1.gif" />
+        <img id="level2gif" class="levelgifs" src="images/Level-2.gif" />
+        <img id="level3gif" class="levelgifs" src="images/Level-3.gif" />
+
+        <!-- Answer selection tiles -->
+        <div id="question1Tile" class="questionTile" onmouseenter="playButtonHoverMusic()" onclick="selectAnswerTile(1)">
+          <p id="questionTileText1" class="questionTileText"></p>
+        </div>
+
+        <div id="question2Tile" class="questionTile" onmouseenter="playButtonHoverMusic()" onclick="selectAnswerTile(2)">
+          <p id="questionTileText2" class="questionTileText"></p>
+        </div>
+
+        <div id="question3Tile" class="questionTile" onmouseenter="playButtonHoverMusic()" onclick="selectAnswerTile(3)">
+          <p id="questionTileText3" class="questionTileText"></p>
+        </div>
+
+        <div id="question4Tile" class="questionTile" onmouseenter="playButtonHoverMusic()" onclick="selectAnswerTile(4)">
+          <p id="questionTileText4" class="questionTileText"></p>
+        </div>
+
+        <!-- Game controls -->
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+
+        <button id="AcceptButton5" class="button" onmouseenter="playButtonHoverMusic()" onclick="submitQuestionAnswers()">Continue</button>
+      </div>
+
+      <!-- Exit Game Confirmation UI -->
+      <div id="exitGameUI" style="display:none;">
+        <a href="https://www.google.com/" target="_self"><button id="ExitButton2" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Exit</button></a>
+        <a href="#" target="_blank"><button id="XSSResourcesButton6" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+      
+        <p id="gameExitTextContainer" class="gameExitText"><br> Thank you <span id='endSessionPlayerConfirmation' style='color: #0df27e;'></span> for taking part in The Game!</p>
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/> 
+
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+      </div>
+
+      <!-- Leaderboard UI -->
+      <div id="leaderboardUI" style="display:none;">
+        <a href="#" target="_blank"><button id="XSSResourcesButton6" class="button" onmouseenter="playButtonHoverMusic()" onclick="playButtonSelectMusic()">Extra Edu. Resources</button></a>
+        <button id="ExitButton3" class="button" onmouseenter="playButtonHoverMusic()" onclick="showMainMenu()">Back to Main Menu</button>
+
+        <p class="questionHeading">Leaderboard</p>
+        <div id="scorableTable">
+          <div id="table-container"></div> 
+        </div>
+   
+        <img class="infobtn" src="images/info.png" onclick="displayInfo()"/>
+        <audio id="startMenuMusic" src="music/startMenuMusic.mp3"></audio>
+        <img class="mutemusicbtn" src="images/mute.png" onclick="playStartMenuMusic()">
+        <img class="playmusicbtn" src="images/speaker.png" onclick="stopStartMenuMusic()">
+      </div>
+
+      <!-- In-game Player Stats Popup -->
+      <div id="playerStatsPopUp" class="overlay" style="display:none;">
+        <div id="mywindow10" class="window infowindow-ingame-statbook">
+          <div class="window-content-ingame-statbook info-window-content-ingame-statbook">
+            <div class="window-header-ingame-statbook">
+              <p id="playerStatsHeader"> Player Stats</p>
+            </div>
+            <div class="window-body-ingame-statbook">
+              <p id="playerNameInGame-statboard" class="playerNameInGame" style="position:fixed;top:7%;z-index:1;"></p>
+              <div><span id="playerScoreInGame-statboard" style="position:fixed;top:29%;z-index:1;">0</span> </div>
+              <p id="playerScoreContainer-statboard" style="position:fixed;top:24%;z-index:1;">Score :</p> 
+              <img id="playerAvatarInGame-statboard" class="playerAvatarInGame" style="position:fixed;top:14%;z-index:1;" />
+              <p id="badge-text" class="statboardText" style="position:fixed;top:45%;right:10%;z-index:1;font-size: 1.2vw;font-weight: bold;">Badges</p>
+              <p id="game_progress_text-statboard" class="statboardText">Game progress</p>
+
+              <div id="fluid-meter-statboard"></div>
+      
+              <div id="player-stat-tabs">
+                <!-- Role selection tabs -->
+                <button id="overallTabSelected" class="tabbutton" style="top:9%;left:1%;" onclick="tabSelected('Overall')">Overall</button>
+                <button id="attackerTabSelected" class="tabbutton tabbutton2" style="top:9%;left:7%;" onclick="tabSelected('Attacker')">Role 1</button>
+                <button id="defenderTabSelected" class="tabbutton tabbutton3" style="top:9%;left:13%;" onclick="tabSelected('Defender')">Role 2</button>
+                <button id="userTabSelected" class="tabbutton tabbutton4" style="top:9%;left:19%;" onclick="tabSelected('User')">Role 3</button>
+
+                <!-- Badges display -->
+                <div id="playerstatboard-badge-box">
+                  <img id="attackerRoleCompletedBadge" src="images/badges/Role1-Completed.png" />
+                  <img id="defenderRoleCompletedBadge" src="images/badges/Role2-Completed.png" />
+                  <img id="userRoleCompletedBadge" src="images/badges/Role3-Completed.png" />
+                  <img id="simZoneCompletedBadge" src="images/badges/Sim-Zone.png" />
+                </div>
+
+                <img id="tabImage" src="images/badges/overall-skills.png" />
+
+                <p id="role-briefing-text">Role Briefing</p>
+
+                <!-- Skills and feedback sections -->
+                <div id="playerstatboard-skills-affirmative-box">
+                  <p id="playerstatboard-skills-affirmative-box-text"></p>
+                </div>
+
+                <div id="playerstatboard-skills-feedback-box"></div>
+
+                <div id="playerstatboard-feedback-box">
+                  <p id="playerstatboard-feedback-box-text"></p>
+                </div>
+        
+                <div id="playerstatboard-skills-box">
+                  <div id="progress-bar-skills-stat-board">
+                    <div>
+                      <p id="progress-bar-Ref-skills-value-statboard">Player Skill 1</p>
+                      <p id="Ref-XSS-Skills-Value-stat-board">0</p>
+                      <progress id='video-progress-Ref-XSS-overall-statboard' class="progress-bar-Ref-skills" min='0' max='100' value='0'></progress>
+                    </div>
+  
+                    <div>
+                      <p id="Stored-XSS-Skills-stat-board">Player Skill 2</p>
+                      <p id="Stored-XSS-Skills-Value-stat-board">0</p>
+                      <progress id='video-progress-Stored-XSS-stat-board' class="progress-bar-Stored-skills" min='0' max='100' value='0'></progress>
+                    </div>
+  
+                    <div>
+                      <p id="DOM-based-XSS-Skills-stat-board">Player Skill 3</p>
+                      <p id="DOM-based-XSS-Skills-Value-stat-board">0</p>
+                      <progress id='video-progress-DOM-based-XSS-stat-board' class="progress-bar-DOM-skills" min='0' max='100' value='0'></progress>
+                    </div>
+  
+                    <div>
+                      <p id="Sim-Zone-Skills-stat-board">Player Skill 4</p>
+                      <p id="Sim-Zone-Skills-Value-stat-board">0</p>
+                      <progress id='video-progress-Sim-Zone-Skills-Progress-stat-board' class="progress-bar-Overall-skills" min='0' max='100' value='0'></progress>
+                    </div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          </div>
+
+          <button id="ExitButton4" class="button" onmouseenter="playButtonHoverMusic()" onclick="closePlayerStatsZone()">Return to Game</button>
+        </div>
+      </div>
+
+      <!-- Page Footer -->
+      <div id="pageFooter" class="footer">
+        <h3 style="font-size: 1vw;">About The Game</h3>
+        <p style="font-size: 1vw;">Add brief info about the game here. 
+          <br>More information about the author can be found in the following links,</p>
+        
+        <!-- Author profile links -->
+        <a href="#" target="_blank">
+          <img id="linkedinicon" src="images/linkedin.png" alt="LinkedIn Profile" />
+        </a>
+
+        <a href="#" target="_blank">
+          <img id="usericon" src="images/profile-user.png" alt="User Profile" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Fluid Meter initialization for progress visualization -->
+    <script>
+      var fm = new FluidMeter();
+      fm.init({
+        targetContainer: document.getElementById("fluid-meter"),
+        fillPercentage: 0,
+        options: {
+          fontFamily: "Oxygen",
+          drawPercentageSign: true,
+          drawBubbles: false,
+          size: 200,
+          borderWidth: 5,
+          backgroundColor: "#000000",
+          canvasId:"LiquidCanvas",
+          foregroundColor: "#f81818",
+          foregroundFluidLayer: {
+            fillStyle: "#008080",
+            angularSpeed: 0,
+            maxAmplitude: 0,
+            frequency: 0,
+            horizontalSpeed: 0
+          },
+          backgroundFluidLayer: {
+            fillStyle: "#008080",
+            angularSpeed: 0,
+            maxAmplitude: 0,
+            frequency: 0,
+            horizontalSpeed: 0
+          }
+        }
+      });
+
+      var fm1 = new FluidMeter();
+      fm1.init({
+        targetContainer: document.getElementById("fluid-meter-statboard"),
+        fillPercentage: 0,
+        options: {
+          fontFamily: "Oxygen",
+          drawPercentageSign: true,
+          drawBubbles: false,
+          size: 200,
+          borderWidth: 5,
+          backgroundColor: "#000000",
+          canvasId:"LiquidCanvasStatboard",
+          foregroundColor: "#f81818",
+          foregroundFluidLayer: {
+            fillStyle: "#008080",
+            angularSpeed: 0,
+            maxAmplitude: 0,
+            frequency: 0,
+            horizontalSpeed: 0
+          },
+          backgroundFluidLayer: {
+            fillStyle: "#008080",
+            angularSpeed: 0,
+            maxAmplitude: 0,
+            frequency: 0,
+            horizontalSpeed: 0
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
