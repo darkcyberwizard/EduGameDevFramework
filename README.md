@@ -1,5 +1,5 @@
 
-# Educational Game Development Framework (EduGameDevFramework)
+# Educational Game Development Framework 
 
 **Framework for Developing Web-Based Educational Games with Multi-Opposing-Role Gameplay, Simulations, and In-Game Feedback**
 
@@ -9,7 +9,9 @@
 
 ## Overview
 
-**EduGameDevFramework** is a **web-based framework** designed to simplify the creation of educational games that teach technical concepts using engaging gameplay mechanics. The framework supports:
+This is a **web-based framework** designed to simplify the creation of educational games that teach technical concepts using engaging gameplay mechanics, based on **The XSS Game (https://github.com/darkcyberwizard/TheXSSGame)**.
+
+The framework supports:
 
 - **Multi-opposing-role gameplay**: Easily implement different roles to create competitive and collaborative scenarios. For instance, **Attacker**, **Defender**, and **User** could be used for a Cybersecurity educational game.
 - **Interactive narrative-based simulations**: Build real-world inspired challenges to teach concepts in a safe and controlled environment.  
