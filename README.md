@@ -133,7 +133,7 @@ Please cite if used in research or coursework:
 ### BibTeX
 
 ```bibtex
-@article{Weeratunge_2025,
+@article{Weeratunge_2025a,
   title={Enhancing Cybersecurity Education Through Multi-Opposing-Role Gameplay and Simulations},
   volume={19},
   ISSN={2049-0992},
